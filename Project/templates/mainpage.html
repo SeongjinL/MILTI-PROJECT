@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>사용자 화면</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mainpage.css')}}">
+</head>
+
+<body>
+    
+<div class="container">   
+  <form> 
+    <div class="box_1">
+         <h1> 사진업로드 </h1>
+         <ul class="navbar-nav ml-auto">
+           <li class="nav-item">
+                {% for obj in data_list%}
+                <p>
+                    <img src="{{ url_for('static', filename=obj.dir) }}" width="175" height="175">
+                </p>
+                {% endfor %}
+                <p>
+                    <form action="http://0.0.0.0:2888/fileUpload" method="POST" enctype = "multipart/form-data">
+                         <input type = "file" name = "file" />
+                         <button class="button" onclick="location.href='/' " >뒤로가기</button>
+                         <button class="button" onclick="return confirm('제출 성공! \n업로드한 이미지를 확인합니다.');">제출하기</button>
+                    </form>
+                </p>
+           </li>
+        </ul>
+    </div>
+  </form>
+</div>  
+
+</body>
+
+</html>
