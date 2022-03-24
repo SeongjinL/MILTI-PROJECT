@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <ul>
+        {% for x in value %}
+
+        <li>
+            <image src="{{'/static/'+x}}" width="72" height="57">
+        </li>
+
+        {% endfor %}
+
+        <iframe src="{{ url_for('normal') }}" width="800" height="900">
+            iframe을 지원하지 않는 브라우저입니다.
+        </iframe>
+    </ul>
+</body>
+
+</html>
