@@ -1,162 +1,230 @@
-from flask import Flask, jsonify, request, session, render_template, make_response,  flash, redirect, url_for
+from flask import Flask, jsonify, request, session, render_template, make_response,  flash, redirect, url_for, send_file, make_response
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_cors import CORS
+import sys
+#sys.path.insert(0, '/home/lab03/kim-project/control')
+import flask
+import matplotlib
 from control.user_mgmt import User
+from control.user_mgmt import Image
 import os
-from flask_pymongo import PyMongo
-from datetime import timedelta
+from datetime import timedelta, datetime
 from werkzeug.utils import secure_filename
-from bson import json_util
+from io import BytesIO
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from functools import wraps, update_wrapper
+from flask_caching import Cache
+from control.user_mgmt import Info
+
+
+matplotlib.use('Agg')
 
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__, static_url_path='/static')
 
-app.config['MONGO_URI'] = 'mongodb://multi:multi@localhost:27017/user?authSource=admin'
-app.config['MONGO_HOST'] = 'localhost'
-app.config['MONGO_PORT'] = '27017'
-app.config['MONGO_DBNAME'] = 'user'
-app.config['MONGO_USERNAME'] = 'multi'
-app.config['MONGO_PASSWORD'] = 'multi'
-app.config['MONGO_AUTH_SOURCE'] = 'admin'
-app.config["PERMANET_SESSION_LIFETIME"] = timedelta(minutes=600)
-mongo = PyMongo(app)
-CORS(app)
-app.secret_key = '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = 'strong'
 
 
+@app.after_request
+def set_response_headers(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.query.get(int(user_id))
 
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    return make_response(jsonify(success=False), 401)
-
-
-@app.route('/check', methods=['POST'])
-def check():
-    user_id = request.form.get('id')
-    user_pw = request.form.get('pw')
-    members = mongo.db.members
-    data = members.find_one({'user_id': user_id})
-    print('data', data)
-    if data is None:
-        flash('회원정보가 없습니다')
-        return redirect(url_for('login'))
-    else:
-        if data.get('user_pw') == user_pw:
-            session['id'] = str(data.get('_id'))
-            session.permanent = True
-            flash('로그인 되었습니다')
-            return redirect(url_for('home'))
-        else:
-            flash('비밀번호가 일치하지 않습니다')
-            return redirect(url_for('login'))
-
-
-@app.route('/create', methods=['POST'])
-def log1():
-    return render_template('create.html')
+    return make_response(jsonify(success=False), 401)    
 
 
 @app.route('/')
 def home():
-    print(session)
-    print(mongo.db.member)
-
-    return render_template('index.html')
+    return render_template("login.html")
 
 
+
+# 회원가입 
+@app.route('/check2', methods=['GET', 'POST'])
+def check2():
+    Email = request.form.get('Email')
+    name = request.form.get('name')
+    pw = request.form.get('pw')
+    pw2 = request.form.get('pw2')
+
+    data = User.get(Email)
+
+    if Email == '' or name == '' or pw == '' or pw2 == '':
+       flash('입력되지 않은 칸이 있습니다')
+       return render_template('register.html')
+
+    if pw != pw2:
+        flash('비밀번호가 일치하지 않습니다')
+        return render_template('register.html')
+
+
+    if data :
+       flash('사용할 수 없는 Email입니다')
+       return render_template('register.html')
+    else :
+        User.create(Email, name, pw)
+        flash('회원가입이 완료되었습니다')
+        return render_template('register.html')
+
+
+
+# 로그인
 @app.route('/login')
 def login():
-    if session.get('id', None) is not None:
+    if session.get('Email', None) is not None:
 
-        return redirect(url_for('home'))
+        return redirect(url_for('mainpage'))
     else:
         return render_template('login.html')
 
 
+# 로그인 체크
+@app.route('/check', methods=['POST'])
+def check():   
+    Email = request.form.get('Email')
+    pw = request.form.get('pw')
+    data = User.get(Email)
+    print(data)
+
+    print(pw)
+
+    # return render_template('login.html')
+    if data == None: #if data is not None <= 원래 코드 
+        flash('회원정보가 없습니다')
+        return redirect(url_for('login'))
+    else:
+        if data.pw == str(pw):
+            session['Email'] = str(data.Email)
+            session.permanent = True
+            flash('로그인 되었습니다')
+            return redirect(url_for('mainpage'))
+        else:
+            flash('비밀번호가 일치하지 않습니다')
+            return redirect(url_for('login'))               
+
+    
+# 로그아웃
 @app.route('/logout')
 def logout():
-    if session.get('id', None) is not None:
-        session.pop('id')
-        return redirect(url_for('home'))
+    if session.get('Email', None) is not None:
+        session.pop('Email')
+        return redirect(url_for('login'))
     else:
         flash('로그인을 해야 합니다')
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
 
 
-@app.route('/check2', methods=['POST'])
-def check2():
-    user_id = request.form.get('id')
-    user_pw = request.form.get('pw')
-    user_pw2 = request.form.get('pw2')
 
-    if user_id == '' or user_pw == '' or user_pw2 == '':
-        flash('입력되지 않은 값이 있습니다')
-        return render_template('create.html')
-
-    if user_pw != user_pw2:
-        flash('비밀번호가 일치하지 않습니다')
-        return render_template('create.html')
-
-    members = mongo.db.members
-    data = members.find({'user_id': user_id})
-    result = []
-    for i in data:
-        result.append(i)
-
-    if len(result) > 0:
-        flash('사용할 수 없는 ID입니다')
-        return render_template('create.html')
-    post = {
-        'user_id': user_id,
-        'user_pw': user_pw,
-    }
-    members.insert_one(post)
-    flash('회원가입이 완료되었습니다')
-    return render_template('login.html')
+# 메인페이지
+@app.route('/mainpage')
+def mainpage():
+    if session.get('Email', None) is not None: #로그인이 돼야
+        return render_template("mainpage.html") #메인페이지로 넘어갈 수 있음
+    else: #로그인이 안되면 mainpage로 못넘어감
+        flash('로그인을 해야 합니다')
+        return render_template('login.html')  
 
 
-@app.route('/upload')
-def upload_file():
-    return render_template('upload.html')
+
+# 사용자정보 
+@app.route('/info')
+def info():
+    if session.get('Email', None) is not None: #로그인이 돼야
+        return render_template("info.html") #메인페이지로 넘어갈 수 있음
+    else: #로그인이 안되면 mainpage로 못넘어감
+        flash('로그인을 해야 합니다')
+        return render_template('login.html')         
 
 
-@app.route('/uploader', methods=['GET', 'POST'])
-def uploader_file():
-    if request.method == 'POST':
-        f = request.files['file']
-        f.save('/home/lab05/babbu/static/' + secure_filename(f.filename))
-        print('session', session)
-        if session['id'] is not None:
-            images = mongo.db.images
-            post = {
-                'user_id': session['id'],
-                'image': secure_filename(f.filename),
-            }
-            images.insert_one(post)
 
-            return 'file uploaded successfully'
+# 사용자 정보 저장 
+@app.route('/userinfo', methods=['GET', 'POST'])
+def userinfo():
+        Email = request.form.get('Email')
+        age = request.form.get('age')
+        sex = request.form.get('sex')
+        weight = request.form.get('weight')
+        height = request.form.get('height')
+        exercise = request.form.get('exercise')
+        disease = request.form.get('disease')
+        drink = request.form.get('drink')
+        smoke = request.form.get('smoke')  
+
+        Info.create(Email, age, sex, weight, height, exercise, disease, drink, smoke)
+        flash('정보수정이 완료되었습니다')
+        return render_template('mainpage.html')
+
+    
 
 
-@app.route('/list')
+
+
+
+# 리스트 HTML에 이미지를 띄우는 것
+@app.route('/list', endpoint='list')
 def blog():
-    if session['id'] is not None:
-        images = mongo.db.images
-        result = images.find({'user_id': session['id']})
-        result = list(result)
-        for i in result:
-            print(i)
+    if session['Email'] is not None:
+        data = Image.get(session['Email'])
+        result = []
+        if data is not None:
+            for i in data:
+                result.append(i[2])
 
-        return render_template('list.html', value=result)
+            return render_template('list.html', value=result)
+        else:
+            return render_template('mainpage.html')
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='8989', debug=True)
+
+
+# Id에 맞는 그래프를 가져옴
+@app.route('/normal')
+def normal():
+    if 'Email' in session:
+        return render_template("graph.html", width=800, height=600)
+
+
+
+# 기본 그래프 설정
+@app.route('/fig')
+def fig():
+
+    plt.figure(figsize=(6, 7))
+
+    data = list(Info.find(session['Email']))
+
+    weight = []
+    date = []
+    for i in range(len(data)):
+        weight.append(data[i][0])
+        date.append(data[i][1])
+
+    plt.plot(date, weight)
+    img = BytesIO()
+    plt.savefig(img, format='png', dpi=300)
+    img.seek(0)
+    return send_file(img, mimetype='image/png')    
+
+
+
+if __name__ == "__main__":
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
+
+    app.run(host="0.0.0.0", port="2888", debug=True)

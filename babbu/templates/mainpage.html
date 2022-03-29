@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<div class="container">   
+
+  <form> 
+    <div class="box_1">
+         <h1> 오늘의 식단은? </h1>
+         <ul class="navbar-nav ml-auto">
+           <li class="nav-item">
+                {% for x in value%}
+                 <p>
+                    <img src="{{ url_for('static', filename = x.image) }}" class="img-thumbnail" alt="Cinque Terre" width="175" height="175">
+                 </p>
+                {% endfor %}
+                <p>
+                  <div class="image-container">
+                    <img style="width: 700px; height:auto;" id="preview-image" src="http://placeimg.com/480/480/nature">
+                    <input style="display: block;" type="file" id="input-image">
+                    <button class="custom-btn btn-9" style="float:right" onclick="location.href='/' " >취소</button>
+                    <button class="custom-btn btn-9" style="float:right" onclick="return confirm('제출 성공! \n업로드한 이미지를 확인합니다.');">제출</button>
+                  </div>
+                </p>
+           </li>
+         </ul>
+    </div>
+    <div class="box_2">
+        <h1> Graph of the week </h1>
+        <div class="box_3 box2">
+        </div>   
+        <button class="custom-btn btn-9" onclick="window.location.reload()">업데이트</button>
+    </div>  
+    <div class="box_6">
+      <h1> Today Calories </h1>
+      <div class="box_3 box6">
+      </div>   
+      <button class="custom-btn btn-9" onclick="window.location.reload()">업데이트</button>
+    </div>  
+  </form>
+</div>  
+
+<script src="http://madalla.kr/js/jquery-1.8.3.min.js"></script>
+
+<script type="text/javascript">
+  function readImage(input) {
+    // 인풋 태그에 파일이 있는 경우
+    if(input.files && input.files[0]) {
+        // 이미지 파일인지 검사 (생략)
+        // FileReader 인스턴스 생성
+        const reader = new FileReader()
+        // 이미지가 로드가 된 경우
+        reader.onload = e => {
+            const previewImage = document.getElementById("preview-image")
+            previewImage.src = e.target.result
+        }
+        // reader가 이미지 읽도록 하기
+        reader.readAsDataURL(input.files[0])
+    }
+}
+// input file에 change 이벤트 부여
+const inputImage = document.getElementById("input-image")
+inputImage.addEventListener("change", e => {
+    readImage(e.target)
+})
+</script>
+
+{% endblock %}

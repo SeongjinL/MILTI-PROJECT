@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="box_5">
+    <h1>내정보</h1>
+    <form action="/userinfo" method= "post">
+        <div class="row">
+            <div class="col">
+                <p><strong>이메일</strong></p>
+                    <input type="text" name="Email" placeholder="이메일" required="required"/>
+
+                <p><strong>나이</strong></p>
+                    <input type="text" name="age" placeholder="나이" required="required"/>
+
+                <p><strong>성별</strong></p>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="sex" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="flexradioDefault1"></label>
+                        남성
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="sex" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="flexradioDefault2"></label>
+                        여성
+                    </div>
+
+                <p><strong>체중(Kg)</strong></p>
+                    <input type="text" name="weight" placeholder="체중" required="required" style="margin-bottom:20px;"/>
+
+                <p><strong>신장(cm)</strong></p>
+                    <input type="text" name="height" placeholder="신장(키)" required="required" style="margin-bottom:20px;"/>
+
+                <p><strong>운동횟수(주)</strong></p>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="exercise" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="exer1"></label>
+                        주 2회 이하
+                    </div>
+                    <div class="form-check form-check-inline" style="margin-bottom:20px;">
+                        <input class="form-check-input" name="exercise" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="exer2"></label>
+                        주 3회
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="exercise" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="exer3"></label>
+                        주 4회
+                    </div>
+                    <div class="form-check form-check-inline" style="margin-bottom:20px;" >
+                        <input class="form-check-input" name="exercise" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="exer4"></label>
+                        주 5회 이상
+                    </div>
+
+                <p><strong>음주(한번 마실때)</strong></p>
+                    <div class="form-check form-check-inline" style="margin-bottom:20px;">
+                        <input class="form-check-input" name="drink" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="drink1"></label>
+                        소주 반병 이하
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="drink" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="drink2"></label>
+                        1병 이하
+                    </div>
+                    <div class="form-check form-check-inline" style="margin-bottom:20px;" >
+                        <input class="form-check-input" name="drink" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="drink3"></label>
+                        1.5병 정도
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="drink" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="drink4"></label>
+                        2병 정도
+                    </div>
+                    <div class="form-check form-check-inline" style="margin-bottom:20px;">
+                        <input class="form-check-input" name="drink" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="drink5"></label>
+                        2.5병 이상
+                    </div>
+
+                <p><strong>기저질환</strong></p> 
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="disease" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="disease1"></label>
+                        O
+                    </div>
+                    <div class="form-check form-check-inline" style="margin-bottom:20px;">
+                        <input class="form-check-input" name="disease" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="disease2"></label>
+                        X
+                    </div>                      
+
+                <p><strong>흡연여부</strong></p>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="smoke" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="smoke1"></label>
+                        O
+                    </div>
+                    <div class="form-check form-check-inline" style="margin-bottom:20px;">
+                        <input class="form-check-input" name="smoke" type="radio" value="" id="flexradioDefault"/>
+                        <label class="form-check-label" for="smoke2"></label>
+                        X
+                    </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-large">저장하기</button>
+            <a href="{{ url_for('mainpage') }}" class="btn btn-secondary btn-block btn-large">메인화면</a>
+
+          </div> 
+        </div>
+    </form>
+</div>
+
+{% endblock %}
