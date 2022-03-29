@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="box">
+        <h1 style="margin-bottom: 50px;">회원가입</h1>
+        <form action="/check2" method="post">
+            <input type="text" name="Email" placeholder="이메일" required="required" style="margin-bottom: 20px;"/>
+            <input type="text" name="name" placeholder="성명" required="required" style="margin-bottom: 20px;"/>
+            <input type="password" name="pw" placeholder="비밀번호" required="required" style="margin-bottom: 20px;"/>
+            <input type="password" name="pw2" placeholder="비밀번호 확인" required="required" style="margin-bottom: 20px;"/>
+            <button type="submit" class="custom-btn btn-11 btn-large" style="float:right">가입완료</button>
+        </form>
+</div>
+
+
+{% endblock %}
