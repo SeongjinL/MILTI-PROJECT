@@ -1,0 +1,311 @@
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<script>
+  alert("{{messages[-1]}}")
+</script>
+{% endif %}
+{% endwith %}
+
+
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.88.1">
+
+
+
+  <title>Login Page</title>
+
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/sign-in/">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../static/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../static/dist/css/bootstrap-theme.css.map">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+
+    #drop-area {
+      border: 2px dashed #ccc;
+      border-radius: 20px;
+      width: 500px;
+      height: 300px;
+      font-family: sans-serif;
+      margin: 100px auto;
+      padding: 20px;
+    }
+
+    #drop-area.highlight {
+      border-color: purple;
+    }
+
+    p {
+      margin-top: 60px;
+    }
+
+    .my-form {
+      font-size: large;
+      margin-bottom: 10px;
+    }
+
+    #gallery {
+      margin-top: 10px;
+    }
+
+    #gallery img {
+      width: 300px;
+      margin-bottom: 10px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px;
+      background: #ccc;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-block-start: 70px;
+      border: 1px solid #ccc;
+    }
+
+    .button:hover {
+      background: #ddd;
+    }
+
+    #fileElem {
+      display: none;
+    }
+  </style>
+
+
+  <!-- Custom styles for this template -->
+  <link href="../static/signin.css" rel="stylesheet">
+</head>
+
+
+
+
+
+
+
+
+<body class="text-center">
+
+
+
+
+
+  <main class="form-signin">
+    <form action="http://13.112.232.65:8999/user/" method="post">
+      <img class="mb-4" src="../static/brand/bootstrap-solid.svg" alt="" width="72" height="57">
+      <h1 class="h3 mb-3 fw-normal">BAPPU</h1>
+      <div class="form-floating">
+        <input name='id' type="id" class="form-control" id="floatingInput" placeholder="Id">
+        <label for="floatingInput">Id</label>
+      </div>
+      <div class="form-floating">
+        <input name='pw' type="password" class="form-control" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword">Password</label>
+      </div>
+
+      <div class="checkbox mb-3">
+        <label>
+          <input type="checkbox" value="remember-me"> 저장하기
+        </label>
+      </div>
+
+      <p>
+        <button id="log2" class="btn btn-lg btn-primary" type="submit">로그인</button>
+      </p>
+    </form>
+
+    <form action="/create" method="post">
+      <button id="log1" class="btn btn-lg btn-default" type="submit">회원가입</button>
+    </form>
+    <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p>
+
+  </main>
+
+  <div id="app">
+    <br />
+    <center>
+      <input type="text" id="user_email">
+      <input type="text" id="user_name">
+      <input type="text" id="user_pw">
+      <button type="button" class="btn btn-secondary" v-on:click="test_post()">
+        POST
+      </button>
+
+      <button type="button" class="btn btn-secondary" v-on:click="test_put()">
+        PUT
+      </button>
+    </center>
+  </div>
+
+
+
+
+  <!-- Vue Start -->
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script type=”text/javascript”
+    src=”https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js”></script> -->
+  <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+  <script>
+    const app = new Vue({
+      el: "#app",
+      methods: {
+        test_get: () => {
+          axios("http://13.112.232.65:8999/user_account/", {
+            method: "get",
+            data: {
+              user_id: document.getElementById('user_email').value,
+              user_id: document.getElementById('user_name').value,
+              user_pw: document.getElementById('user_pw').value,
+              token: localStorage.getItem('token')
+            },
+          })
+            .then((response) => {
+              console.log(response.data)
+              if (response.data == true) {
+                localStorage.setItem('token', response.data['token']);
+                alert('login success');
+                window.location.href = 'http://localhost:8989/';
+              } else {
+                alert('change ID');
+                window.location.href = 'http://localhost:8989/login';
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+        test_post: () => {
+          axios("http://13.112.232.65:8999/user_account/", {
+            method: "post",
+            data: {
+              user_email: document.getElementById('user_email').value,
+              user_name: document.getElementById('user_name').value,
+              user_pw: document.getElementById('user_pw').value,
+            },
+          })
+            .then((response) => {
+              console.log(response.data)
+
+              // if (response.data['status'] == true) {
+
+              //   $.cookie('token', response.data['token']);
+              //   $.cookie('user_email', response.data['user_email']);
+              //   $.cookie('weight', response.data['weight']);
+              //   $.cookie('time', response.data['time']);
+
+              //   console.log(response.data['token'])
+              //   console.log(response.data['user_email'])
+              //   console.log(response.data['weight'])
+              //   console.log(response.data['time'])
+
+
+              //   alert('login success');
+
+              //   window.location.href = 'http://localhost:8989/test';
+
+              // } else {
+              //   if (response.data['massage'] == 'email') {
+              //     alert('change email');
+              //     window.location.href = 'http://localhost:8989/login';
+              //   } else {
+              //     alert('change password');
+              //     window.location.href = 'http://localhost:8989/login';
+              //   }
+
+              // }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+
+        test_put: () => {
+          axios("http://13.112.232.65:8999/user_account/", {
+            method: "put",
+            data: {
+              user_email: document.getElementById('user_email').value,
+              user_name: document.getElementById('user_name').value,
+              user_pw: document.getElementById('user_pw').value,
+            },
+          })
+            .then((response) => {
+              console.log(response.data)
+              if (response.data['status'] == true) {
+                alert('welcome');
+                window.location.href = 'http://localhost:8989/';
+              } else {
+                alert('change email');
+                window.location.href = 'http://localhost:8989/login';
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+        test_delete: () => {
+          axios("http://13.112.232.65:8999/user/", {
+            method: "delete",
+          })
+            .then((response) => {
+              console.log(response.data)
+              if (response.data == true) {
+                alert('See you later');
+                window.location.href = 'http://localhost:8989/';
+              } else {
+                alert('retry');
+                window.location.href = 'http://localhost:8989/login';
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+      },
+    });
+  </script>
+
+
+
+
+
+</body>
+
+</html>
